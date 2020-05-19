@@ -1,0 +1,36 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker
+  name: 00-configure-ovs
+spec:
+  config:
+    ignition:
+      version: 2.2.0
+    systemd:
+      units:
+        - enabled: true
+          name: openvswitch.service
+        - contents: |
+            [Unit]
+            After=NetworkManager.service
+            After=openvswitch.service
+            [Service]
+            Type=oneshot
+            Environment=DEFAULT_DEVICE=enp3s0f1
+            Environment=SECONDARY_DEVICE=enp3s0f3
+            Environment=PROFILE_NAME='Wired connection 6'
+            Environment=SECONDARY_PROFILE_NAME='Wired connection 8'
+            ExecStart=/bin/sh /var/setup-ovs.sh
+            [Install]
+            WantedBy=multi-user.target
+          name: setup-ovs.service
+          enabled: true
+    storage:
+      files:
+        - contents:
+            source: data:text/plain;charset=utf-8;base64,IyEvdXNyL2Jpbi9lbnYgYmFzaAoKc2V0IC1leAoKZGVmYXVsdF9kZXZpY2U9JHtERUZBVUxUX0RFVklDRX0Kc2Vjb25kYXJ5X2RldmljZT0ke1NFQ09OREFSWV9ERVZJQ0V9CnByb2ZpbGVfbmFtZT0ke1BST0ZJTEVfTkFNRX0Kc2Vjb25kYXJ5X3Byb2ZpbGVfbmFtZT0ke1NFQ09OREFSWV9QUk9GSUxFX05BTUV9CgptYWM9JChzdWRvIG5tY2xpIC1nIEdFTkVSQUwuSFdBRERSIGRldiBzaG93ICRkZWZhdWx0X2RldmljZSB8IHNlZCAtZSAncy9cXC8vZycpCgppZiBbWyAkKG5tY2xpIGNvbm4gfCBncmVwIC1jIG92cykgLWVxIDAgXV07IHRoZW4KICAgICMgbWFrZSBicmlkZ2UKICAgIG5tY2xpIGNvbm4gYWRkIHR5cGUgb3ZzLWJyaWRnZSBjb25uLmludGVyZmFjZSBicmNudiBpcHY0LmRoY3AtY2xpZW50LWlkIDAxOiRtYWMKICAgIG5tY2xpIGNvbm4gYWRkIHR5cGUgb3ZzLXBvcnQgY29ubi5pbnRlcmZhY2UgcG9ydDAgbWFzdGVyIGJyY252CiAgICBubWNsaSBjb25uIGFkZCB0eXBlIG92cy1wb3J0IGNvbm4uaW50ZXJmYWNlIGJyY252LXBvcnQgbWFzdGVyIGJyY252CiAgICBubWNsaSBjb25uIGFkZCB0eXBlIG92cy1pbnRlcmZhY2UgY29ubi5pZCBicmNudi1pZmFjZSBjb25uLmludGVyZmFjZSBicmNudiBtYXN0ZXIgYnJjbnYtcG9ydCBpcHY0Lm1ldGhvZCBhdXRvIGNvbm5lY3Rpb24uYXV0b2Nvbm5lY3Qgbm8KCiAgICAjIG1ha2UgYm9uZAogICAgbm1jbGkgY29ubiBhZGQgdHlwZSBvdnMtcG9ydCBjb25uLmludGVyZmFjZSBib25kMCBtYXN0ZXIgYnJjbnYgb3ZzLXBvcnQuYm9uZC1tb2RlIGJhbGFuY2Utc2xiCiAgICBubWNsaSBjb25uIGFkZCB0eXBlIGV0aGVybmV0IGNvbm4uaW50ZXJmYWNlICRkZWZhdWx0X2RldmljZSBtYXN0ZXIgYm9uZDAKICAgIG5tY2xpIGNvbm4gYWRkIHR5cGUgZXRoZXJuZXQgY29ubi5pbnRlcmZhY2UgJHNlY29uZGFyeV9kZXZpY2UgbWFzdGVyIGJvbmQwCiAgICBubWNsaSBjb25uIGRvd24gIiRwcm9maWxlX25hbWUiIHx8IHRydWUKICAgIG5tY2xpIGNvbm4gbW9kICIkcHJvZmlsZV9uYW1lIiBjb25uZWN0aW9uLmF1dG9jb25uZWN0IG5vCiAgICBubWNsaSBjb25uIGRvd24gIiRzZWNvbmRhcnlfcHJvZmlsZV9uYW1lIiB8fCB0cnVlCiAgICBubWNsaSBjb25uIG1vZCAiJHNlY29uZGFyeV9wcm9maWxlX25hbWUiIGNvbm5lY3Rpb24uYXV0b2Nvbm5lY3Qgbm8KICAgIGlmICEgbm1jbGkgY29ubiB1cCBicmNudi1pZmFjZTsgdGhlbgogICAgICAgIG5tY2xpIGNvbm4gdXAgIiRwcm9maWxlX25hbWUiIHx8IHRydWUKICAgICAgICBubWNsaSBjb25uIG1vZCAiJHByb2ZpbGVfbmFtZSIgY29ubmVjdGlvbi5hdXRvY29ubmVjdCB5ZXMKICAgICAgICBubWNsaSBjb25uIHVwICIkc2Vjb25kYXJ5X3Byb2ZpbGVfbmFtZSIgfHwgdHJ1ZQogICAgICAgIG5tY2xpIGNvbm4gbW9kICIkc2Vjb25kYXJ5X3Byb2ZpbGVfbmFtZSIgY29ubmVjdGlvbi5hdXRvY29ubmVjdCB5ZXMKICAgICAgICBubWNsaSBjIGRlbGV0ZSAkKG5tY2xpIGMgc2hvdyB8Z3JlcCBvdnMtY252IHxhd2sgJ3twcmludCAkMX0nKSB8fCB0cnVlCiAgICBlbHNlCiAgICAgICAgbm1jbGkgY29ubiBtb2QgYnJjbnYtaWZhY2UgY29ubmVjdGlvbi5hdXRvY29ubmVjdCB5ZXMKICAgICAgICByZWJvb3QKICAgIGZpCmVsc2UKICAgIGVjaG8gIm92cyBicmlkZ2UgYWxyZWFkeSBwcmVzZW50IgpmaQo=
+          filesystem: root
+          mode: 484
+          path: /var/setup-ovs.sh
