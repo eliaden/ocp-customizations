@@ -1,4 +1,0 @@
-export DEFAULT_DEVICE=ens3
-export SECONDARY_DEVICE=ens10
-export PROFILE_NAME='Wired connection 1'
-export SECONDARY_PROFILE_NAME='Wired connection 2'
