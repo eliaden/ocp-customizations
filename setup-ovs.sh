@@ -55,7 +55,7 @@ if [[ $(nmcli conn | grep -c ovs) -eq 0 ]]; then
       nmcli c delete $(nmcli c show |grep ovs-cnv |awk '{print $1}') || true
   else
       nmcli conn mod brcnv-iface connection.autoconnect yes
-#      reboot
+      reboot
   fi
 else
     echo "ovs bridge already present"
