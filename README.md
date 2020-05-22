@@ -44,13 +44,13 @@ Make any necessary modifications to `setup-ovs.sh` and `mco_ovs.yml.tmp` and run
 ```
 export SCRIPT_BASE64=$(base64 -w 0 setup-ovs.sh)
 envsubst '${SCRIPT_BASE64}' < mco_ovs.yml.tmpl > mco_ovs.yml
+```
+
+Then apply the MachineConfig to the cluster:
+```
 for node in $(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true -o name | awk -F/ '{print $2}'); do
   oc label node $node network.operator.openshift.io/external-openvswitch=true
 done
-```
-
-Then appl the MachineConfig to the cluster:
-```
 oc apply -f mco_ovs.yml
 ```
 
@@ -59,4 +59,17 @@ oc apply -f mco_ovs.yml
 `mco_storage.yml` will mount an extra 5th partition in the specified location. Modify `mco_storage.yml` if necessary (e.g. to change the path) and apply it to the cluster:
 ```
 oc apply -f mco_storage.yml
+```
+
+## Combined MCO
+
+To save on reboots, all customizations can be combined in to one MachineConfig object.
+```
+export SCRIPT_BASE64=$(base64 -w 0 setup-ovs.sh)
+envsubst '${SCRIPT_BASE64}' < mco_all.yml.tmpl > mco_all.yml
+```
+
+And apply it to the cluster:
+```
+oc apply -f moc_all.yml
 ```
