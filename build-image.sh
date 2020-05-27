@@ -22,9 +22,9 @@ buildah commit --format docker $container $IMAGE:$TAG
 
 
 
-export ROBOT_USER=gs-hosted-catalog+goldman
-export ROBOT_PASSWD=V824ZJXDENA7U7LO9Q9LL6S9061ERLU539RDLIRGY2P7ZAWSAPNMTZ77TRCRGKB6
-export REGISTRY=quay.io/gs-hosted-catalog
+export ROBOT_USER=USER
+export ROBOT_PASSWD=PASSWORD
+export REGISTRY=REGISTRY
 podman login -u $ROBOT_USER -p $ROBOT_PASSWD quay.io
 podman tag localhost/$IMAGE:$TAG $REGISTRY/$IMAGE:$TAG
 podman push $REGISTRY/$IMAGE:$TAG
