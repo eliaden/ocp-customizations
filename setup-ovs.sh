@@ -51,7 +51,7 @@ if [[ $(nmcli conn | grep -c ovs) -eq 0 ]]; then
       nmcli conn up "$profile_name" || true
       nmcli conn mod "$profile_name" connection.autoconnect yes
       nmcli conn up "$secondary_profile_name" || true
-      nmcli conn mod "$secondary_profile_name" connection.autoconnect yes
+      nmcli conn mod "$secondary_profile_name" connection.autoconnect yes || true
       nmcli c delete $(nmcli c show |grep ovs-cnv |awk '{print $1}') || true
   else
       nmcli conn mod brcnv-iface connection.autoconnect yes
