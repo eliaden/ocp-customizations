@@ -14,7 +14,8 @@ spec:
           name: openvswitch.service
         - contents: |
             [Unit]
-            After=NetworkManager-wait-online.service
+            After=network-online.target
+            Wants=network-online.target
             After=openvswitch.service
             [Service]
             Type=oneshot
