@@ -33,9 +33,11 @@ if [[ $(nmcli conn | grep -c ovs) -eq 0 ]]; then
   mac=$(sudo nmcli -g GENERAL.HWADDR dev show $default_device | sed -e 's/\\//g')
   
   # make bridge
-  nmcli conn add type ovs-bridge conn.interface brcnv ipv4.method auto connection.autoconnect no ipv4.dhcp-client-id 01:$mac 802-3-ethernet.cloned-mac-address $mac
+  nmcli conn add type ovs-bridge conn.interface brcnv
   nmcli conn add type ovs-port conn.interface brcnv-port master brcnv
-  nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port 
+  nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto connection.autoconnect no ipv4.dhcp-client-id 01:$mac 802-3-ethernet.cloned-mac-address $mac
+  #nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port
+  
 
   # make bond
   nmcli conn add type ovs-port conn.interface bond0 master brcnv ovs-port.bond-mode balance-slb
@@ -52,7 +54,7 @@ if [[ $(nmcli conn | grep -c ovs) -eq 0 ]]; then
       nmcli conn mod "$secondary_profile_name" connection.autoconnect yes
       nmcli c delete $(nmcli c show |grep ovs-cnv |awk '{print $1}') || true
   else
-      nmcli conn mod ovs-bridge-brcnv connection.autoconnect yes
+      nmcli conn mod brcnv-iface connection.autoconnect yes
       reboot
   fi
 else
