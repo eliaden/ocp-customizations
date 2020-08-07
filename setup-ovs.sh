@@ -33,10 +33,9 @@ if [[ $(nmcli conn | grep -c ovs) -eq 0 ]]; then
   mac=$(sudo nmcli -g GENERAL.HWADDR dev show $default_device | sed -e 's/\\//g')
   
   # make bridge
-  nmcli conn add type ovs-bridge conn.interface brcnv
+  nmcli conn add type ovs-bridge conn.interface brcnv ipv4.dhcp-client-id 01:$mac 802-3-ethernet.cloned-mac-address $mac
   nmcli conn add type ovs-port conn.interface brcnv-port master brcnv
-  nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto connection.autoconnect no ipv4.dhcp-client-id 01:$mac 802-3-ethernet.cloned-mac-address $mac
-  #nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port
+  nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto connection.autoconnect no
   
 
   # make bond
