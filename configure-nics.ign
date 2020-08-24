@@ -24,7 +24,7 @@
       {
         "filesystem": "root",
         "overwrite": false,
-        "path": "/etc/NetworkManager/conf.d/10-extra-config.conf",
+        "path": "/etc/NetworkManager/conf.d/10-dhcp-config.conf",
         "contents": {
           "source": "data:text/plain;charset=utf-8;base64,W21haW5dCm5vLWF1dG8tZGVmYXVsdD0qCmRoY3A9ZGhjbGllbnQK",
           "verification": {}
