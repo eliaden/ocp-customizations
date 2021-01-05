@@ -2,6 +2,11 @@
 
 set -ex
 
+if [[ ! -f /boot/mac_addresses ]] ; then
+  echo "no mac address configuration file found .. exiting"
+  exit 1
+fi
+
 if [[ $(nmcli conn | grep -c ovs) -eq 0 ]]; then
   oc --kubeconfig /etc/kubernetes/kubeconfig label node $(hostname)  network.operator.openshift.io/external-openvswitch=true
   echo "configure ovs bonding"
@@ -34,27 +39,16 @@ if [[ $(nmcli conn | grep -c ovs) -eq 0 ]]; then
   mac=$(sudo nmcli -g GENERAL.HWADDR dev show $default_device | sed -e 's/\\//g')
   
   # make bridge
-  ##nmcli conn add type ovs-bridge conn.interface brcnv
-
-  #nmcli conn add type ovs-bridge conn.interface brcnv ipv4.dhcp-client-id 01:$mac 802-3-ethernet.cloned-mac-address $mac
-  #nmcli conn add type ovs-bridge conn.interface brcnv 802-3-ethernet.cloned-mac-address $mac
-  #nmcli conn add type ovs-port conn.interface port0 master brcnv
-  #nmcli conn add type ovs-port conn.interface brcnv-port master brcnv
-  ##nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto connection.autoconnect no
-  #nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto ipv4.dhcp-client-id "01:$mac" connection.autoconnect no
-
-  ##nmcli conn add type ovs-port conn.interface brcnv-port master brcnv
-  ##nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto connection.autoconnect no ipv4.dhcp-client-id 01:$mac 802-3-ethernet.cloned-mac-address $mac
-  ##nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto connection.autoconnect no
-
-  # code.engineering
   nmcli conn add type ovs-bridge conn.interface brcnv 802-3-ethernet.cloned-mac-address $mac
   nmcli conn add type ovs-port conn.interface brcnv-port master brcnv
-  #nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto ipv4.dhcp-client-id "01:$mac" connection.autoconnect no
-  nmcli conn add type ovs-interface conn.id brcnv-iface conn.interface brcnv master brcnv-port ipv4.method auto ipv4.dhcp-client-id "mac" connection.autoconnect no 802-3-ethernet.cloned-mac-address $mac
-
+  nmcli conn add type ovs-interface \
+                 conn.id brcnv-iface \
+                 conn.interface brcnv master brcnv-port \
+                 ipv4.method auto \
+                 ipv4.dhcp-client-id "mac" \
+                 connection.autoconnect no \
+                 802-3-ethernet.cloned-mac-address $mac
   
-
   # make bond
   nmcli conn add type ovs-port conn.interface bond0 master brcnv ovs-port.bond-mode balance-slb
   nmcli conn add type ethernet conn.interface $default_device master bond0
