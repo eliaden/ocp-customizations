@@ -104,13 +104,6 @@ storage:
 
               # Wait for device node
               udevadm settle
-
-              # Get the device node
-              partition=$(lsblk "${device}" --paths --pairs --output NAME,PARTLABEL |\
-                  awk '/PARTLABEL="'${LABEL}'"/ && match($0, "NAME=\"([a-zA-Z0-9/_-]+)\"", a) {print a[1]; exit 0}')
-
-              # Create ext4 filesystem in it
-              mkfs.xfs -L "${LABEL}" "${partition}"
           else
               echo "Found existing data partition; not creating a new one"
           fi
